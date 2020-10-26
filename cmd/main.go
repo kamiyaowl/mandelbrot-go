@@ -1,10 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"mandelbrot-go/pkg/core"
+	"log"
+	"mandelbrot-go/pkg/mandelbrot"
+
+	"github.com/hajimehoshi/ebiten"
 )
 
 func main() {
-	fmt.Println(core.Test())
+	// ebiten.SetWindowSize(640, 480)
+	ebiten.SetWindowTitle("mandelbrot-go")
+	if err := ebiten.RunGame(&mandelbrot.Game{}); err != nil {
+		log.Fatal(err)
+	}
 }
