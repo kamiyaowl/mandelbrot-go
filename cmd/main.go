@@ -8,9 +8,15 @@ import (
 )
 
 func main() {
-	// ebiten.SetWindowSize(640, 480)
+	// TODO: commandline argsから取得?
+	width := 800
+	height := 600
+	windowScale := 2
+
+	ebiten.SetWindowSize(width*windowScale, height*windowScale)
 	ebiten.SetWindowTitle("mandelbrot-go")
-	if err := ebiten.RunGame(&mandelbrot.Game{}); err != nil {
+	g := mandelbrot.NewDefaultParam(width, height)
+	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
 }
