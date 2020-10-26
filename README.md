@@ -1,0 +1,2 @@
+# mandelbrot-go
+go practice
