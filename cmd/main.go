@@ -9,8 +9,8 @@ import (
 
 func main() {
 	// TODO: commandline argsから取得?
-	width := 800
-	height := 600
+	width := 400
+	height := 300
 	windowScale := 2
 	palettePath := "palette.csv"
 

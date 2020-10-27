@@ -208,9 +208,9 @@ func NewDefaultParam(width int, height int, palettePath string) *Game {
 		width:            width,
 		height:           height,
 		iterMax:          256,
-		centerX:          0.0,
+		centerX:          -0.5,
 		centerY:          0.0,
-		distancePerPixel: 0.005,
+		distancePerPixel: 0.009155,
 		z0x:              0,
 		z0y:              0,
 		isParamChanged:   true,
@@ -227,6 +227,16 @@ func NewDefaultParam(width int, height int, palettePath string) *Game {
 
 // tickごとに呼び出されます
 func (g *Game) Update(screen *ebiten.Image) error {
+	// 拡大, 縮小
+	_, dy := ebiten.Wheel()
+	if dy != 0 {
+		if dy < 0 {
+			g.distancePerPixel *= 1.25
+		} else {
+			g.distancePerPixel *= 0.75
+		}
+		g.isParamChanged = true
+	}
 	return nil
 }
 
@@ -237,11 +247,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		g.drawOffscreen()
 		g.isParamChanged = false
 	}
+
 	// 画像を描画
 	screen.DrawImage(g.offscreenImage, nil)
 
 	// debug print
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %0.2f C: (%0.8f, %0.8f) iter: %d distance/pixel: %f", ebiten.CurrentFPS(), g.centerX, g.centerY, g.iterMax, g.distancePerPixel))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %0.2f\nC: (%0.8f, %0.8f)\niter: %d\nd/p: %f\n", ebiten.CurrentFPS(), g.centerX, g.centerY, g.iterMax, g.distancePerPixel))
 }
 
 // screen size取得時に呼び出されます
