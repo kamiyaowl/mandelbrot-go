@@ -10,6 +10,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
 // Paletteで使用する色情報
@@ -207,7 +208,7 @@ func NewDefaultParam(width int, height int, palettePath string) *Game {
 	g := Game{
 		width:            width,
 		height:           height,
-		iterMax:          256,
+		iterMax:          1024,
 		centerX:          -0.5,
 		centerY:          0.0,
 		distancePerPixel: 0.009155,
@@ -227,10 +228,25 @@ func NewDefaultParam(width int, height int, palettePath string) *Game {
 
 // tickごとに呼び出されます
 func (g *Game) Update(screen *ebiten.Image) error {
+	// クリックした位置に移動, 連続では反映しない
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		// window内に収まっていることを確認してから、実座標に変換する
+		cx, cy := ebiten.CursorPosition()
+		if cx >= 0 && cy >= 0 && cx < g.width && cy < g.height {
+			// スクリーン座標で、中央からのの距離を求める
+			sx := cx - (g.width / 2)
+			sy := cy - (g.height / 2)
+			// 実座標系に変換して、現在地点に足し合わせる
+			g.centerX += float64(sx) * g.distancePerPixel
+			g.centerY += float64(sy) * g.distancePerPixel
+
+			g.isParamChanged = true
+		}
+	}
 	// 拡大, 縮小
-	_, dy := ebiten.Wheel()
-	if dy != 0 {
-		if dy < 0 {
+	_, wy := ebiten.Wheel()
+	if wy != 0 {
+		if wy < 0 {
 			g.distancePerPixel *= 1.25
 		} else {
 			g.distancePerPixel *= 0.75
