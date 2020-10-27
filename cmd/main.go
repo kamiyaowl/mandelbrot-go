@@ -12,10 +12,12 @@ func main() {
 	width := 800
 	height := 600
 	windowScale := 2
+	palettePath := "palette.csv"
 
 	ebiten.SetWindowSize(width*windowScale, height*windowScale)
 	ebiten.SetWindowTitle("mandelbrot-go")
-	g := mandelbrot.NewDefaultParam(width, height)
+	ebiten.SetRunnableOnUnfocused(true)
+	g := mandelbrot.NewDefaultParam(width, height, palettePath)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

@@ -1,12 +1,24 @@
 package mandelbrot
 
 import (
+	"encoding/csv"
 	"fmt"
+	"io"
 	"math/cmplx"
+	"os"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
+
+// Paletteで使用する色情報
+type Color struct {
+	r byte
+	g byte
+	b byte
+	a byte
+}
 
 // Mandelbrotを表示するゲーム構造体
 type Game struct {
@@ -32,24 +44,72 @@ type Game struct {
 	offscreenImage *ebiten.Image
 	// offscreenImage計算用のworkbuffer
 	workbuffer []byte
+	// 描画色, nilのままであればデフォルトの設定で描画
+	palette []Color
 }
 
-// 描画範囲以外を初期値で埋めた構造体を返します
-func NewDefaultParam(width, height int) *Game {
-	g := Game{
-		width:            width,
-		height:           height,
-		iterMax:          256,
-		centerX:          0.0,
-		centerY:          0.0,
-		distancePerPixel: 0.005,
-		z0x:              0,
-		z0y:              0,
-		isParamChanged:   true,
-		offscreenImage:   nil, // drawOffscreen -> initOffscreen で初期化
-		workbuffer:       nil, // drawOffscreen -> initOffscreen で初期化
+// CSVファイルから色情報を読み込みます
+func (g *Game) readPaletteFromCsv(palettePath string) {
+	// read from file
+	file, err := os.Open(palettePath)
+	if err != nil {
+		panic(err)
 	}
-	return &g
+	defer file.Close()
+
+	isHeaderSkipped := false
+	p := []Color{}
+	r := csv.NewReader(file)
+	for {
+		// record: [4]string{r,g,b,a}
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		// other error
+		if err != nil {
+			panic(err)
+		}
+		// skip header
+		if !isHeaderSkipped {
+			isHeaderSkipped = true
+			continue
+		}
+		// 要素数が満たなければSkip
+		if len(record) < 4 {
+			continue
+		}
+		// add color
+		var r int
+		var g int
+		var b int
+		var a int
+		if r, err = strconv.Atoi(record[0]); err != nil {
+			panic(err)
+		}
+		if g, err = strconv.Atoi(record[1]); err != nil {
+			panic(err)
+		}
+		if b, err = strconv.Atoi(record[2]); err != nil {
+			panic(err)
+		}
+		if a, err = strconv.Atoi(record[3]); err != nil {
+			panic(err)
+		}
+
+		c := Color{
+			r: byte(r),
+			g: byte(g),
+			b: byte(b),
+			a: byte(a),
+		}
+		p = append(p, c)
+	}
+
+	// 要素が存在していれば新規に置き換える
+	if len(p) > 0 {
+		g.palette = p
+	}
 }
 
 // 発散するまでにかかったループ数を返します。iterMaxの値で頭打ちされます
@@ -85,6 +145,32 @@ func (g *Game) initOffscreen() {
 	}
 }
 
+// 描画色を取得します, Paletteが事前に読み込まれていなければデフォルト設定(収束:白, 発散: 黒)になります
+func (g *Game) getColor(n int) *Color {
+	// default color
+	if g.palette == nil {
+		if n == g.iterMax {
+			return &Color{
+				r: 255,
+				g: 255,
+				b: 255,
+				a: 255,
+			}
+		} else {
+			return &Color{
+				r: 0,
+				g: 0,
+				b: 0,
+				a: 0,
+			}
+		}
+	}
+
+	// from palette array
+	index := n % len(g.palette)
+	return &g.palette[index]
+}
+
 // offscreenImageにマンデルブロ集合を描画します
 func (g *Game) drawOffscreen() {
 	// オフスクリーンバッファを取得していない、もしくはサイズが変更された場合は再生成する
@@ -102,23 +188,41 @@ func (g *Game) drawOffscreen() {
 
 			// 対象のpixel
 			ptr := ((j * g.width) + i) * 4 // 4 = RGBA
-			// TODO: 色をおしゃれに
-			if n == g.iterMax {
-				g.workbuffer[ptr+0] = 0xff // R
-				g.workbuffer[ptr+1] = 0xff // G
-				g.workbuffer[ptr+2] = 0xff // B
-			} else {
-				g.workbuffer[ptr+0] = 0 // R
-				g.workbuffer[ptr+1] = 0 // G
-				g.workbuffer[ptr+2] = 0 // B
-			}
-			g.workbuffer[ptr+3] = 0xff // A
+			// 色を決定して載せておく
+			c := g.getColor(n)
+			g.workbuffer[ptr+0] = c.r
+			g.workbuffer[ptr+1] = c.g
+			g.workbuffer[ptr+2] = c.b
+			g.workbuffer[ptr+3] = c.a
 
 		}
 	}
 
 	// Imageの中身を更新
 	g.offscreenImage.ReplacePixels(g.workbuffer)
+}
+
+// 描画範囲以外を初期値で埋めた構造体を返します
+func NewDefaultParam(width int, height int, palettePath string) *Game {
+	g := Game{
+		width:            width,
+		height:           height,
+		iterMax:          256,
+		centerX:          0.0,
+		centerY:          0.0,
+		distancePerPixel: 0.005,
+		z0x:              0,
+		z0y:              0,
+		isParamChanged:   true,
+		offscreenImage:   nil, // drawOffscreen -> initOffscreen で初期化
+		workbuffer:       nil, // drawOffscreen -> initOffscreen で初期化
+		palette:          nil, // readPaletteFromCsvで作成するか、nilを継続
+	}
+	// paletteの読み込み。rgbaのCSVになっているのでpaletteに配列で展開
+	if palettePath != "" {
+		g.readPaletteFromCsv(palettePath)
+	}
+	return &g
 }
 
 // tickごとに呼び出されます
