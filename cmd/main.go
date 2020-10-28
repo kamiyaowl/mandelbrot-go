@@ -9,10 +9,11 @@ import (
 
 func main() {
 	// TODO: commandline argsから取得?
-	width := 400
-	height := 300
+	width := 640
+	height := 640
 	windowScale := 2
-	palettePath := "palette.csv"
+	palettePath := ""
+	// palettePath := "palette.csv"
 
 	ebiten.SetWindowSize(width*windowScale, height*windowScale)
 	ebiten.SetWindowTitle("mandelbrot-go")

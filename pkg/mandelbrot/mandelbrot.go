@@ -150,20 +150,12 @@ func (g *Game) initOffscreen() {
 func (g *Game) getColor(n int) *Color {
 	// default color
 	if g.palette == nil {
-		if n == g.iterMax {
-			return &Color{
-				r: 255,
-				g: 255,
-				b: 255,
-				a: 255,
-			}
-		} else {
-			return &Color{
-				r: 0,
-				g: 0,
-				b: 0,
-				a: 0,
-			}
+		dst := byte(float32(n) / float32(g.iterMax) * 255)
+		return &Color{
+			r: 0,
+			g: dst,
+			b: 0,
+			a: 255,
 		}
 	}
 
@@ -208,7 +200,7 @@ func NewDefaultParam(width int, height int, palettePath string) *Game {
 	g := Game{
 		width:            width,
 		height:           height,
-		iterMax:          1024,
+		iterMax:          128,
 		centerX:          -0.5,
 		centerY:          0.0,
 		distancePerPixel: 0.009155,
