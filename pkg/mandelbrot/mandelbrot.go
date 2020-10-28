@@ -196,6 +196,29 @@ func (g *Game) drawOffscreen() {
 }
 
 // 描画範囲以外を初期値で埋めた構造体を返します
+
+func NewDetailParam(width int, height int, palettePath string, iterMax int, distancePerPixel float64, centerX float64, centerY float64, z0x float64, z0y float64) *Game {
+	g := Game{
+		width:            width,
+		height:           height,
+		iterMax:          iterMax,
+		centerX:          centerX,
+		centerY:          centerY,
+		distancePerPixel: distancePerPixel,
+		z0x:              z0x,
+		z0y:              z0y,
+		isParamChanged:   true,
+		offscreenImage:   nil, // drawOffscreen -> initOffscreen で初期化
+		workbuffer:       nil, // drawOffscreen -> initOffscreen で初期化
+		palette:          nil, // readPaletteFromCsvで作成するか、nilを継続
+	}
+	// paletteの読み込み。rgbaのCSVになっているのでpaletteに配列で展開
+	if palettePath != "" {
+		g.readPaletteFromCsv(palettePath)
+	}
+	return &g
+}
+
 func NewDefaultParam(width int, height int, palettePath string) *Game {
 	g := Game{
 		width:            width,
