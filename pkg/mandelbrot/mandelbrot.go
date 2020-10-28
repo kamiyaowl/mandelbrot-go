@@ -220,6 +220,18 @@ func NewDefaultParam(width int, height int, palettePath string) *Game {
 
 // tickごとに呼び出されます
 func (g *Game) Update(screen *ebiten.Image) error {
+	// キーボードを押したときにIterMaxを調整
+	if inpututil.IsKeyJustReleased(ebiten.KeyA) {
+		g.iterMax /= 2
+		if g.iterMax == 0 {
+			g.iterMax = 1
+		}
+		g.isParamChanged = true
+	}
+	if inpututil.IsKeyJustReleased(ebiten.KeyD) {
+		g.iterMax *= 2
+		g.isParamChanged = true
+	}
 	// クリックした位置に移動, 連続では反映しない
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 		// window内に収まっていることを確認してから、実座標に変換する
@@ -260,7 +272,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.offscreenImage, nil)
 
 	// debug print
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %0.2f\nC: (%0.8f, %0.8f)\niter: %d\nd/p: %f\n", ebiten.CurrentFPS(), g.centerX, g.centerY, g.iterMax, g.distancePerPixel))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("[A][D] - change Iter\nFPS: %0.2f\nC: (%0.8f, %0.8f)\niter: %d\nd/p: %f\n", ebiten.CurrentFPS(), g.centerX, g.centerY, g.iterMax, g.distancePerPixel))
 }
 
 // screen size取得時に呼び出されます
