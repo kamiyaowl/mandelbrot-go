@@ -11,7 +11,7 @@ func main() {
 	// TODO: commandline argsから取得?
 	width := 640
 	height := 640
-	windowScale := 2
+	windowScale := 1
 	palettePath := ""
 	// palettePath := "palette.csv"
 
