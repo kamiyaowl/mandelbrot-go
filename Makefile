@@ -8,6 +8,8 @@ test:
 	go test -v ./
 run:
 	go run -v $(MAINFILE)
+run-wasm:
+	wasmserve $(MAINFILE)
 docs:
 	godoc -http=:6060
 init:
