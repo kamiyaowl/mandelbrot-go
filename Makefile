@@ -4,6 +4,8 @@ BINFILE=./main
 all: test build
 build:
 	go build -o $(BINFILE) -v $(MAINFILE)
+build-wasm:
+	GOOS=js GOARCH=wasm go build -o web/$(BINFILE).wasm $(MAINFILE)
 test:
 	go test -v ./
 run:
