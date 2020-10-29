@@ -12,6 +12,7 @@
 *.out
 main
 *.wasm
+wasm_exec.js
 
 # Dependency directories (remove the comment below to include it)
 # vendor/

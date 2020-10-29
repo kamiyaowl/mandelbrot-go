@@ -5,6 +5,7 @@ all: build-wasm build-arch
 build-arch:
 	go build -o $(BINFILE) -v $(MAINFILE)
 build-wasm:
+	cp $(shell go env GOROOT)/misc/wasm/wasm_exec.js web/
 	GOOS=js GOARCH=wasm go build -o web/$(BINFILE).wasm $(MAINFILE)
 test:
 	go test -v ./
