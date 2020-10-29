@@ -8,12 +8,6 @@
             "type": "shell",
             "command": "make run",
             "problemMatcher": []
-        },
-        {
-            "label": "build",
-            "type": "shell",
-            "command": "make build",
-            "problemMatcher": []
         }
     ]
 }

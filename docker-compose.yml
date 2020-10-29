@@ -1,0 +1,16 @@
+version: '3'
+services:
+  build-arch:
+    build:
+      context: ./build
+      dockerfile: build-arch.Dockerfile
+    volumes:
+      - ./:/go/src
+    command: make build-arch
+  build-wasm:
+    build:
+      context: ./build
+      dockerfile: build-wasm.Dockerfile
+    volumes:
+      - ./:/go/src
+    command: make build-wasm

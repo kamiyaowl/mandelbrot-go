@@ -1,8 +1,8 @@
 MAINFILE=./cmd/main.go
 BINFILE=./main
 
-all: test build
-build:
+all: build-wasm build-arch
+build-arch:
 	go build -o $(BINFILE) -v $(MAINFILE)
 build-wasm:
 	GOOS=js GOARCH=wasm go build -o web/$(BINFILE).wasm $(MAINFILE)
