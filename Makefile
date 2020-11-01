@@ -8,7 +8,9 @@ build-wasm:
 	cp $(shell go env GOROOT)/misc/wasm/wasm_exec.js web/
 	GOOS=js GOARCH=wasm go build -o web/$(BINFILE).wasm $(MAINFILE)
 test:
-	go test -v ./
+	go test -v ./...
+test-cov:
+	go test -coverage ./...
 run:
 	go run -v $(MAINFILE)
 run-wasm:

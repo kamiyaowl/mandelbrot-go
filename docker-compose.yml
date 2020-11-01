@@ -1,16 +1,29 @@
 version: '3'
 services:
-  build-arch:
-    build:
-      context: ./build
-      dockerfile: build-arch.Dockerfile
-    volumes:
-      - ./:/go/src
-    command: make build-arch
   build-wasm:
     build:
       context: ./build
-      dockerfile: build-wasm.Dockerfile
+      target: test_base
     volumes:
       - ./:/go/src
     command: make build-wasm
+  build-arch:
+    build:
+      context: ./build
+      target: build_ubuntu
+    volumes:
+      - ./:/go/src
+    command: make build-arch
+  test:
+    build:
+      context: ./build
+      target: test_ubuntu
+    privileged: true
+    environment:
+      - DISPLAY=:1
+    volumes:
+      - ./:/go/src
+    command: bash -c "
+      /usr/bin/Xorg -noreset +extension GLX +extension RANDR +extension RENDER -logfile ./xdummy.log -config ./build/xorg.conf :1 &
+      make test
+      "
