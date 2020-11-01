@@ -3,7 +3,7 @@ services:
   build-wasm:
     build:
       context: ./build
-      target: test_base
+      target: build_base
     volumes:
       - ./:/go/src
     command: make build-wasm
