@@ -1,6 +1,7 @@
 # mandelbrot-go
 
 [![Deploy](https://github.com/kamiyaowl/mandelbrot-go/workflows/Deploy/badge.svg)](https://github.com/kamiyaowl/mandelbrot-go/actions?query=workflow%3ADeploy)
+[![Test](https://github.com/kamiyaowl/mandelbrot-go/workflows/Test/badge.svg)](https://github.com/kamiyaowl/mandelbrot-go/actions?query=workflow%3ATest)
 
 ![screenshot](https://user-images.githubusercontent.com/4300987/97613956-adcae200-1a5c-11eb-9867-957fe50bff4f.jpg)
 
