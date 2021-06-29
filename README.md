@@ -8,7 +8,7 @@
 マンデルブロ集合を描画するだけのアプリケーションです。go勉強のためのサンプルとして作成したものです。。wasm版は以下で遊ぶことができます。
 集合の描画は愚直に行っているのであまりパフォーマンスはよくありません...
 
-http://kamiya.tech/mandelbrot-go/
+https://kamiyaowl.github.io/mandelbrot-go/
 
 ## ローカルで実行する
 
